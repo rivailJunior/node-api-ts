@@ -10,7 +10,7 @@ export class ForecastController {
   @Get("")
   public async getForecastForLoggedUser(_: Request, res: Response): Promise<void> {
     try {
-      const beaches = await Beach.find({})
+      const beaches = await Beach.find({});
       const foreacastData = await forecast.processForecastForBeaches(beaches);
       res.status(200).send(foreacastData);
     } catch (err) {

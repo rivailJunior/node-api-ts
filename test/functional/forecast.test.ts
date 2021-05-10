@@ -19,12 +19,23 @@ describe("Beach forecast function test", () => {
 
 	test("should return a forecast with just a few times", async () => {
 
-		nock('https://api.stormglass.io:443', { "encodedQueryParams": true })
+		nock('https://api.stormglass.io:443', {
+			encodedQueryParams: true,
+			reqheaders: {
+				Authorization: (): boolean => true,
+			},
+		})
+			.defaultReplyHeaders({ 'access-control-allow-origin': '*' })
 			.get('/v2/weather/point')
-			.query({ "params": "swellDirection%2CswellHeight%2CswellPeriod%2CwaveDirection%2CwaveHeight%2CwindDirection", "source": "noaa", "end": "1592113802", "lat": "-33.792726", "lng": "151.289824" })
+			.query({
+				lat: '-33.792726',
+				lng: '151.289824',
+				params: /(.*)/,
+				source: 'noaa',
+			})
 			.reply(200, stormGlassWeather3HoursFixture);
 
-		const { body, status } = await global.testRequest.get("/forecast");
+		const { body, status } = await global.testRequest.get('/forecast');
 		expect(status).toBe(200);
 
 		expect(body).toEqual(api_forecast_response);
