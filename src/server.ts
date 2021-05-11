@@ -1,6 +1,7 @@
 import "./utils/module-alias";
 import { BeachesController } from './controllers/beaches';
 import { ForecastController } from "./controllers/forecast";
+import { UserController } from './controllers/users'
 import { Server } from "@overnightjs/core";
 import bodyParser from "body-parser";
 import { Application } from "express";
@@ -23,7 +24,8 @@ export class SetupServer extends Server {
   private setupControllers(): void {
     const forecastController = new ForecastController();
     const beachesController = new BeachesController()
-    this.addControllers([forecastController, beachesController]);
+    const usersController = new UserController()
+    this.addControllers([forecastController, beachesController, usersController]);
   }
 
   private async databaseSetup(): Promise<void> {
