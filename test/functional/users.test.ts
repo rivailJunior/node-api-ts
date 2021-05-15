@@ -32,9 +32,10 @@ describe('User functional tests', () => {
                 code: 422,
                 error: 'User validation failed: name: Path `name` is required.'
             });
+
         });
 
-        it('Should return 409 when the email already exists', async () => {
+        test('Should return 409 when the email already exists', async () => {
             const newUser = {
                 name: 'Jhon Doe',
                 email: 'jhon@mail.com',
@@ -51,4 +52,48 @@ describe('User functional tests', () => {
             });
         })
     });
+
+    describe('When autenticating a user', () => {
+        test('should generate a token for a valid user', async () => {
+            const newUser = {
+                name: 'John Doe',
+                email: 'john@mail.com',
+                password: '1234',
+            };
+            await new User(newUser).save();
+            const response = await global.testRequest
+                .post('/users/authenticate')
+                .send({ email: newUser.email, password: newUser.password });
+
+            expect(response.body).toEqual(
+                expect.objectContaining({ token: expect.any(String) })
+            );
+        })
+
+        test('should return UNAUTHORIZED if the user with the given email is not found', async () => {
+            const response = await global.testRequest
+                .post('/users/authenticate')
+                .send({ email: 'some-email@mail.com', password: '123456' });
+
+            expect(response.status).toBe(401);
+        })
+
+        test('should return UNAUTHORIZED if the user is found but the password does not match', async () => {
+            const newUser = {
+                name: 'John Doe',
+                email: 'john@mail.com',
+                password: '1234',
+            };
+            await new User(newUser).save();
+            const response = await global.testRequest
+                .post('/users/authenticate')
+                .send({ email: newUser.email, password: 'different password' });
+
+            expect(response.status).toBe(401);
+            expect(response.body).toEqual({
+                code: 401,
+                error: 'Password does not match'
+            })
+        })
+    })
 })
