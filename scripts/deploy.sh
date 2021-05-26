@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+ #!/usr/bin/env bash
 
 # Init .ssh dir and expand $SSH_KEY
 mkdir -p ~/.ssh
