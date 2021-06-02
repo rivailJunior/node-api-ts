@@ -1,3 +1,4 @@
+import logger from '@src/logger';
 import Mongoose from 'mongoose';
 import { Beach } from '@src/models/beach';
 import { ClassMiddleware, Controller, Post } from '@overnightjs/core';
@@ -14,6 +15,7 @@ export class BeachesController {
             const result = await beach.save();
             res.status(201).send(result);
         } catch (err) {
+            logger.error(err);
             if (err instanceof Mongoose.Error.ValidationError) {
                 res.status(422).send({ error: err.message })
             } else {
