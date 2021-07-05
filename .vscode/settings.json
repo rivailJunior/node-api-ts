@@ -1,3 +1,11 @@
 {
-  "editor.tabSize": 2
+  "editor.tabSize": 2,
+  "editor.quote_type": "single",
+  "files.autoSave": "onFocusChange",
+  "prettier.jsxSingleQuote": true,
+  "prettier.singleQuote": true,
+  "scssFormatter.singleQuote": true,
+  "eslint.format.enable": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true
 }
