@@ -5,7 +5,7 @@
 			"mongoUrl": "mongodb://localhost:27017/surf-forecast"
 		},
 		"resources": {
-			"stormGlass": {
+			"StormGlass": {
 				"apiUrl": "https://api.stormglass.io/v2",
 				"apiToken": "ad457778-adf0-11eb-849d-0242ac130002-ad4577f0-adf0-11eb-849d-0242ac130002"
 			}
