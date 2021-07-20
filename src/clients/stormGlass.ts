@@ -16,20 +16,19 @@ export interface StormGlassPoint {
     readonly windSpeed: StormGlassPointSource;
 }
 export interface StormGlassForecastResponse {
-    hours: StormGlassPoint[];
-    waveHeight: number;
-    waveDirection: number;
-    swellDirection: number;
-    swellHeight: number;
-    swellPeriod: number;
-    windDirection: number;
-    windSpeed: number;
+	hours: StormGlassPoint[];
 }
 
 export interface ForecastPoint {
-    time: string;
+	time: string;
+	waveHeight: number;
+	waveDirection: number;
+	swellDirection: number;
+	swellHeight: number;
+	swellPeriod: number;
+	windDirection: number;
+	windSpeed: number;
 }
-
 
 export class ClientRequestError extends InternalError {
     constructor(message: string) {
