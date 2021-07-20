@@ -3,6 +3,7 @@ import logger from '@src/logger';
 import { Beach } from '@src/models/beach';
 import { InternalError } from './../utils/errors/internal-error';
 import { StormGlass, ForecastPoint } from '@src/clients/stormGlass';
+import _ from 'lodash';
 
 export interface BeachForecast extends Omit<Beach, 'user'>, ForecastPoint {}
 
@@ -27,29 +28,40 @@ export class Forecast {
 		beaches: Beach[]
 	): Promise<TimeForecast[]> {
 		try {
-			const pointsWithCorrectSources: BeachForecast[] = [];
-			logger.info(`Preparing the forecast for ${beaches.length} beaches`);
-			for (const beach of beaches) {
-				const rating = new this.RatingService(beach);
-				const points = await this.stormGlass.fetchPoints(
-					beach.lat,
-					beach.lng
-				);
-				const enricheBeachData = this.enricheBeachData(
-					points,
-					beach,
-					rating
-				);
-				pointsWithCorrectSources.push(...enricheBeachData);
-			}
-			return this.mapForecastByTime(pointsWithCorrectSources);
+			const beachForecast = await this.calculateRating(beaches);
+			const timeForecast = this.mapForecastByTime(beachForecast);
+			return timeForecast.map((t) => ({
+				time: t.time,
+				// TODO Allow ordering to be dynamic
+				// Sorts the beaches by its ratings
+				forecast: _.orderBy(t.forecast, ['rating'], ['desc']),
+			}));
 		} catch (error) {
 			logger.error(error);
 			throw new ForecastProcessingInternalError(error.message);
 		}
 	}
 
-	private enricheBeachData(
+	private async calculateRating(beaches: Beach[]): Promise<BeachForecast[]> {
+		const pointsWithCorrectSources: BeachForecast[] = [];
+		logger.info(`Preparing the forecast for ${beaches.length} beaches`);
+		for (const beach of beaches) {
+			const rating = new this.RatingService(beach);
+			const points = await this.stormGlass.fetchPoints(
+				beach.lat,
+				beach.lng
+			);
+			const enrichedBeachData = this.enrichBeachData(
+				points,
+				beach,
+				rating
+			);
+			pointsWithCorrectSources.push(...enrichedBeachData);
+		}
+		return pointsWithCorrectSources;
+	}
+
+	private enrichBeachData(
 		points: ForecastPoint[],
 		beach: Beach,
 		rating: Rating
